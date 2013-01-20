@@ -9,16 +9,13 @@ Standalone background program
 
 from __future__ import with_statement
 import time
-import numpy as np
 import os.path
 import Pyro.core
-import Pyro.core
 import Pyro.naming
-from Pyro.errors import PyroError, NamingError
 import socket
 import struct
 
-from gavrtdb import FakeGavrtDB,GavrtDB
+from gavrtdb import GavrtDB #FakeGavrtDB
 
 from loggers import corelog
 
@@ -28,7 +25,7 @@ class DummyXantInterface(Pyro.core.ObjBase):
     def __init__(self):
         Pyro.core.ObjBase.__init__(self)
         self.source = {}
-        self.gdb = FakeGavrtDB()
+#        self.gdb = FakeGavrtDB()
 
     def connect(self,*args,**kwargs):
         print "Dummy: Not Connecting"
