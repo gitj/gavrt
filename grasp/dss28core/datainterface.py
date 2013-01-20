@@ -5,7 +5,8 @@ import gavrtdb
 import time
 import Pyro.core
 from gluon.storage import Storage
-from rss import ibob_fiber_map, channelInfo
+from gavrt_constants import ibob_fiber_map
+from rss import channelInfo
 
 
 class DataInterface(Pyro.core.ObjBase):
