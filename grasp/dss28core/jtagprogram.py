@@ -76,7 +76,7 @@ def identify_cables():
     fh = open(fname,'w')
     fh.write(identify_cable_script)
     fh.close()
-    p = subprocess.Popen('/home/gej/impact -batch ' + fname,bufsize=0,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,shell=True)
+    p = subprocess.Popen('/home/dss28/impact -batch ' + fname,bufsize=0,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,shell=True)
     #output = ''
     while p.returncode is None:
         p.poll()
