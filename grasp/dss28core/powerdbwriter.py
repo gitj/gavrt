@@ -4,7 +4,7 @@
 
 Reads status from the Lambda Power supply (provides +5 V to IBOBs and BEE2) and stores in the GavrtDB
 """
-import gavrtdb
+import grasp.gavrtdb as gavrtdb
 import time
 import serial
 
