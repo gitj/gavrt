@@ -8,11 +8,11 @@ import tempfile
 import datetime
 import dateutil.parser
 import time
-import gavrtdb
+import grasp.gavrtdb as gavrtdb
 import calendar #timegm
 from loggers import corelog,DSS28
 
-from private import SPSS_UPS
+from grasp.private import SPSS_UPS
 
 class UPS():
     def __init__(self, old = None,ipaddr=SPSS_UPS.host):
