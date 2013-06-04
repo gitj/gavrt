@@ -19,7 +19,7 @@ import numpy as np
 import sys, time
 import myu3 as u3
 
-import gavrtdb
+import grasp.gavrtdb as gavrtdb
 import time
 
 from loggers import corelog
