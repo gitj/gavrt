@@ -40,6 +40,8 @@ class GavrtDB():
             conv_dict = pymysql.converters.conversions.copy()
             conv_dict[pymysql.constants.FIELD_TYPE.DECIMAL] = pymysql.converters.convert_float
             conv_dict[pymysql.constants.FIELD_TYPE.NEWDECIMAL] = pymysql.converters.convert_float
+            pymysql.converters.encoders[np.float64] = pymysql.converters.escape_float
+            pymysql.converters.encoders[np.float32] = pymysql.converters.escape_float
             MySQLdb.converters = pymysql.converters
             _sqlcompress = False # compression not supported by pymysql yet
         except:
