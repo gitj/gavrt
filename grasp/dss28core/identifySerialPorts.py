@@ -15,7 +15,8 @@ import os
 import glob
 import cPickle
 from loggers import corelog as logger
-DSS28_DIR = '/home/dss28' 
+#DSS28_DIR = '/home/dss28' 
+from config import DSS28_DIR
 
 
 def identify():
