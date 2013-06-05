@@ -13,13 +13,13 @@ The :class:`~TCTServer` is accessible through Pyro as **TCTServer**
 import time
 import serial
 import calendar
-import Pyro.core
-import gavrtdb
+import Pyro4
+import grasp.gavrtdb as gavrtdb
 from loggers import corelog
 import config
 
 
-class TCTServer(Pyro.core.ObjBase):
+class TCTServer():
     """
     Manage the TCT connection monitoring.
     
@@ -28,7 +28,6 @@ class TCTServer(Pyro.core.ObjBase):
     Note the TCT uses 9600 7-Odd-1 format  
     """
     def __init__(self,port=None):
-        Pyro.core.ObjBase.__init__(self)
         if port is None:
             try:
                 port =config.serialPortMap['TCT']
@@ -128,12 +127,15 @@ class TCTServer(Pyro.core.ObjBase):
             H = int(r[7:9]) #hour
             M = int(r[9:11]) #min
             S = int(r[11:13]) #sec
-            status = int(r[13])
+            status = int(r[13],base=16)
             checksum = int(r[14:17],16)
         except Exception, e:
             corelog.exception("Couldn't parse TCT output")
             return None
-        ut = calendar.timegm(time.strptime("%04d %03d %02d %02d %02d" % (Y,doy,H,M,S), "%Y %j %H %M %S"))
+        try:
+            ut = calendar.timegm(time.strptime("%04d %03d %02d %02d %02d" % (Y,doy,H,M,S), "%Y %j %H %M %S"))
+        except ValueError:
+            corelog.exception("Couldn't convert TCT date to unixtime")
         offset = ut-now
         corelog.debug("Status %d Found ut %f difference from now %f" % (status, ut, offset))
         hold = False
@@ -166,18 +168,30 @@ class TCTServer(Pyro.core.ObjBase):
 
 
 if __name__=="__main__":
-    import Pyro.naming
-    Pyro.config.PYRO_MULTITHREADED = 0
-    Pyro.core.initServer()
-    ns = Pyro.naming.NameServerLocator().getNS()
+    import select
+    Pyro4.config.SERVERTYPE = "multiplex"
+    ns = Pyro4.locateNS()
+    try:
+        old = ns.lookup('TCTServer')
+        old.quit()
+        corelog.info("Quit existing TCTServer")
+        time.sleep(1)
+    except:
+        pass
     try:
         ns.unregister('TCTServer')
     except:
         pass
-    daemon = Pyro.core.Daemon()
-    daemon.useNameServer(ns)
+    daemon = Pyro4.Daemon()
     tct = TCTServer()
-    daemon.connect(tct,"TCTServer")
+    uri = daemon.register(tct)
+    ns.register('TCTServer',uri)
+
     while tct.running:
         tct.update()
-        daemon.handleRequests(60) #Timeout after 60 seconds, then loop
+        while True:
+            s,_,_ = select.select(daemon.sockets,[],[],0.01)
+            if s:
+                daemon.events(s)
+            else:
+                break
